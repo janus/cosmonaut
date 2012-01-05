@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #include "networking.h"
 #include "configuration.h"
@@ -63,6 +64,8 @@ int bind_server_socket_fd() {
   if ((status = bind(server_socket_fd, servinfo->ai_addr, servinfo->ai_addrlen)) != 0) {
     die(gai_strerror(status));
   }
+
+  fcntl(server_socket_fd, F_SETFL, fcntl(server_socket_fd, F_GETFL, 0) | O_NONBLOCK);
 
   if ((status = listen(server_socket_fd, configuration->socket_queue_size)) != 0) {
     die(gai_strerror(status));
